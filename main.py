@@ -2,12 +2,12 @@
 def getInput():
     '''
     input: void
-    output: tuple (str, int)
+    output: tuple (str, str)
     '''
     Y = input("Please enter ISBN-10: ")
-    print("Please Pick Error Detection Strategy: \n 1. getting a digit wrong \n 2. interchanging two (unequal) digits")
-    type = input()
-    return Y, int(type)
+    Y = Y.replace("-", "")
+    location = input("Please enter the location of suspected error: ")
+    return Y, location
 
 
 def Syndrome(Y):
@@ -25,27 +25,28 @@ def Syndrome(Y):
     return Sum % 11
 
 def main():
-    userInput = getInput()
-    Y, t = userInput
+    Y, error_digit = getInput()
+    # print(Y, error_digit)
     Sy = Syndrome(Y)
-    print("S(y) = ", Sy)
+    print("Syndrome of Y = ", Sy)
     if Sy == 0:
         print("This is a valid ISBN-10")
-    elif t == 1:
-        place = 0
-        print("type1 error to do")
-    elif t == 2:
-        k = 0
-        l = 1
-        for k in range(9):
-            for l in range(1, 10):
-                yk, yl = Y[k], Y[l]
-                if yl == 'X': yl = 10
-                if k != l and Sy == ((k-l)*(int(yl)-int(yk)))%11:
-                    print("Error found: swap places ", k, " and ", l )
-                    return
     else:
-        print("Error: cannot correct error")
+        t = 0
+        if error_digit == 'X': t = 10
+        else: t = int(error_digit)
+        x = 0
+        if Y[t-1] == 'X': x = 10
+        else: x = int(Y[t-1])
+        Sy2 = Sy - t*x
+        for i in range(11):
+            if (Sy2 + i*t)%11 == 0:
+                output = str(i)
+                if i == 10: output = 'X'
+                print("The correct digit is ", i)
+                break
+            if i == '10':
+                print("Error cannot be corrected.")
     return
 
 if __name__ == "__main__":
